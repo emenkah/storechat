@@ -3,10 +3,38 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from .serializers import StoreSerializer, ClientSerializer
+from .serializers import StoreSerializer, ClientSerializer, OperatorSerializer
 from authmanager.serializers import UserSerializer
-from .models import Client, Store
+from .models import Client, Operator, Store
 # Create your views here.
+
+class NewOperatorAPIView(APIView):
+    
+   def post(self, request):
+        store = request.data['store']
+        department = request.data['department']
+
+        #print("Store UUID Check: ", store)
+        department = request.POST.get('department', 'operations')
+        
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_obj = serializer.save()
+
+        store_obj = Store.objects.get(uuid=store)
+
+        operator = Operator.objects.create(user=user_obj, store=store_obj, department=department)
+
+        serializer = OperatorSerializer(operator)
+
+        data = {}
+
+        data["success"] = True
+        data["message"] = "New Client Created"
+        data["data"] = serializer.data
+
+        return Response(data=data, status=status.HTTP_201_CREATED)
+
 
 
 class NewClientAPIView(APIView):
@@ -35,8 +63,8 @@ class NewStoreAPIView(APIView):
 
 
     def get(self, request):
-        services = Store.objects.all()
-        serializer = StoreSerializer(services, many=True)
+        stores = Store.objects.all()
+        serializer = StoreSerializer(stores, many=True)
         return Response(serializer.data)
 
     
@@ -47,8 +75,9 @@ class NewStoreAPIView(APIView):
             serializer.save()
             data = {}
             data["success"] = True
-            data["message"] = "New Store, %s"% (serializer.validated_data["name"])
+            data["message"] = "New Store, %s, is  created"% (serializer.validated_data["name"] )
             data["data"] = serializer.data
+            
             return Response(data=data, status=status.HTTP_201_CREATED)
 
         data = {}

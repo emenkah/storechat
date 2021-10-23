@@ -33,3 +33,57 @@ class Client(models.Model):
 
     def __str__(self):
         return '{}-{}'.format(self.user, self.timezone)
+
+class Operator(models.Model):
+
+    DEPT_CHOICE = (
+        ('sales', 'sales'),
+        ('grocery', 'Grocery'),
+        ('pharmacy', 'Pharmacy'),
+        ('operations', 'Operations'),
+    )
+
+    uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, to_field="uuid", on_delete=models.CASCADE)
+    department = models.CharField(max_length=32, choices=DEPT_CHOICE, default='operations')
+    created_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
+    def __str__(self):
+        return '{}-{}-{}'.format(self.user, self.store, self.department)
+
+
+class ConversationParty(models.Model):
+    STATUS_CHOICE = (
+        ('pending', 'Pending'),
+        ('responding', 'Responding'),
+        ('resolved', 'Resolved'),
+        ('unresolved', 'Unresolved'),
+        
+        
+    )
+    uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    operator = models.ForeignKey(Operator, on_delete=models.CASCADE)
+    created_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    resolved_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    status = models.CharField(max_length=32, choices=STATUS_CHOICE, default='pending')
+
+    def __str__(self):
+        return '{}-{}'.format(self.store, self.client)
+
+class Chat(models.Model):
+    uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
+    conversation_party = models.ForeignKey(ConversationParty, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    operator = models.ForeignKey(Operator, on_delete=models.CASCADE)
+    created_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    status = models.CharField(max_length=32,  default='pending')
+    payload = models.TextField('Chat Payload',blank=True, null=True)
+
+    def __str__(self):
+        return '{}-{}'.format(self.store, self.conversation_party.uuid)
+
+class Schedule(models.Model):
+    pass
