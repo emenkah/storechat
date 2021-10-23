@@ -25,7 +25,7 @@ class Store(models.Model):
 
 class Client(models.Model):
     uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, to_field="uuid", on_delete=models.CASCADE)
     timezone = models.CharField(max_length=32, choices=TIMEZONES, default='UTC')
     address = models.ManyToManyField(Address, blank=True, null=True)
     #telephone =  PossiblePhoneNumberField("Telephone No.", unique=True)
@@ -33,6 +33,7 @@ class Client(models.Model):
 
     def __str__(self):
         return '{}-{}'.format(self.user, self.timezone)
+
 
 class Operator(models.Model):
 
@@ -63,12 +64,13 @@ class ConversationParty(models.Model):
         
     )
     uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
-    store = models.ForeignKey(Store, on_delete=models.CASCADE)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    operator = models.ForeignKey(Operator, on_delete=models.CASCADE)
+    store = models.ForeignKey(Store, to_field="uuid", on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, to_field="uuid", on_delete=models.CASCADE)
+    operator = models.ForeignKey(Operator, to_field="uuid", on_delete=models.CASCADE)
     created_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     resolved_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     status = models.CharField(max_length=32, choices=STATUS_CHOICE, default='pending')
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return '{}-{}'.format(self.store, self.client)

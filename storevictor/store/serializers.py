@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from . models import Store, Client, User, Operator
+from . models import Store, Client, Operator, ConversationParty
 from authmanager.serializers import UserSerializer
 
 
@@ -10,7 +10,7 @@ class StoreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Store
-        fields = [ 'name', 'created_by', 'created_by_details', 'timezone', 'telephone']
+        fields = [ 'name', 'uuid' ,'created_by', 'created_by_details', 'timezone', 'telephone']
         extra_kwargs = {
             'created_by': {'write_only': True} 
         }
@@ -24,7 +24,7 @@ class OperatorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Operator
         dept = 1
-        fields = [ 'user', 'store', 'store_detail', 'operator_detail', 'department' ]
+        fields = [ 'user', 'uuid', 'store', 'store_detail', 'operator_detail', 'department' ]
         extra_kwargs = {
             'store': {'write_only': True} 
         }
@@ -36,6 +36,22 @@ class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         dept = 1
-        fields = [ 'user', 'client_detail', 'timezone', 'address']
+        fields = [ 'user', 'uuid', 'client_detail', 'timezone', 'address']
 
 
+class ConversationPartySerializer(serializers.ModelSerializer):
+
+    
+    client_detail = ClientSerializer(source='client', read_only=True)
+    store_and_operator = OperatorSerializer(source='operator', read_only=True)
+
+    class Meta:
+        model = ConversationParty
+        dept = 1
+        fields = [ 'store', 'uuid', 'client','client_detail', 'operator', 'store_and_operator', 'status']
+        extra_kwargs = {
+            'store': {'write_only': True}, 
+            'client': {'write_only': True},
+            'operator': {'write_only': True} 
+
+        }
