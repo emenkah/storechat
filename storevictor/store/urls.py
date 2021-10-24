@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import ( NewStoreAPIView, NewClientAPIView, NewOperatorAPIView, 
-                    NewConversationPartyAPIView, NewConversationPartyDetailsAPIView
+                    NewConversationPartyAPIView, NewConversationPartyDetailsAPIView,
+                    NewClientChatAPIView, NewChatDetailsAPIView, NewOperatorChatAPIView
 )
 
 urlpatterns = [ 
@@ -8,7 +9,11 @@ urlpatterns = [
     path('operator/new-operator/', NewOperatorAPIView.as_view()),
     path('customer/register/', NewClientAPIView.as_view()),
     path('customer/register/', NewClientAPIView.as_view()), 
-    path('operation/conversation/', NewConversationPartyAPIView.as_view()), 
-    path('operation/conversation/<uuid>/', NewConversationPartyDetailsAPIView.as_view()), 
+    path('operations/conversation/', NewConversationPartyAPIView.as_view()), 
+    path('operations/conversation/<uuid>/', NewConversationPartyDetailsAPIView.as_view()), 
+    path('operations/chat/', NewClientChatAPIView.as_view()), 
+    path('operations/chat/respond/', NewOperatorChatAPIView.as_view()), 
+    path('operations/chat/<uuid>/', NewChatDetailsAPIView.as_view()), 
+    
 
 ]

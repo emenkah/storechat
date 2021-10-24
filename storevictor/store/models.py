@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import RegexValidator
 from utility.validators import no_past, PossiblePhoneNumberField
 from utility.models import Address
 import uuid
@@ -21,6 +22,16 @@ class Store(models.Model):
 
     def __str__(self):
         return '{}-{}'.format(self.name, self.timezone)
+
+class Discount(models.Model):
+
+    uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
+    store = models.ForeignKey(Store, to_field='uuid', on_delete=models.CASCADE, blank=True, null=True)
+    code = models.CharField(max_length=12 )
+    created_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
+    def __str__(self):
+        return '{}-{}'.format(self.store, self.code)
 
 
 class Client(models.Model):
@@ -75,14 +86,63 @@ class ConversationParty(models.Model):
     def __str__(self):
         return '{}-{}'.format(self.store, self.client)
 
-class Chat(models.Model):
+class ClientChat(models.Model):
+
+    COMM_CHOICE = (
+        ('sending', 'sending'),
+        ('receiving', 'receiving'),        
+    )
+
     uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
-    conversation_party = models.ForeignKey(ConversationParty, on_delete=models.CASCADE)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    operator = models.ForeignKey(Operator, on_delete=models.CASCADE)
+    conversation_party = models.ForeignKey(ConversationParty, to_field="uuid", on_delete=models.CASCADE)
+    communication = models.CharField(max_length=12, choices=COMM_CHOICE, blank=True, null=True)
+    user = models.ForeignKey(User, to_field='uuid', on_delete=models.CASCADE, blank=True, null=True)
     created_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     status = models.CharField(max_length=32,  default='pending')
-    payload = models.TextField('Chat Payload',blank=True, null=True)
+    message = models.TextField('Chat Payload',
+                                max_length=300,
+                                blank=True, 
+                                null=True,
+                                validators=[
+                                RegexValidator(
+                                    regex='[\*a-zA-Z0-9_\-\.\{\}]*$',
+                                    message='Please ensure that you use right characters in your message',
+                                    code='invalid_username'
+                                    ),
+                                ]
+    )
+    is_deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return '{}-{}'.format(self.store, self.conversation_party.uuid)
+
+
+class OperatorChat(models.Model):
+
+    COMM_CHOICE = (
+        ('sending', 'sending'),
+        ('receiving', 'receiving'),        
+    )
+
+    uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
+    conversation_party = models.ForeignKey(ConversationParty, to_field="uuid", on_delete=models.CASCADE)
+    operator = models.ForeignKey(Operator, to_field='uuid', on_delete=models.CASCADE, blank=True, null=True)
+    chat = models.ForeignKey(ClientChat, to_field='uuid', on_delete=models.CASCADE, blank=True, null=True)
+    created_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    status = models.CharField(max_length=32,  default='pending')
+    message = models.TextField('Chat Payload',
+                                max_length=300,
+                                blank=True, 
+                                null=True,
+                                validators=[
+                                RegexValidator(
+                                    regex='[\*a-zA-Z0-9_\-\.\{\}]*$',
+                                    message='Please ensure that you use right characters in your message',
+                                    code='invalid_username'
+                                    ),
+                                ]
+    )
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return '{}-{}'.format(self.store, self.conversation_party.uuid)

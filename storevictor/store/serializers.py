@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from . models import Store, Client, Operator, ConversationParty
+from . models import Store, Client, Operator, ConversationParty, ClientChat, OperatorChat
 from authmanager.serializers import UserSerializer
-
 
 
 class StoreSerializer(serializers.ModelSerializer):
@@ -53,5 +52,23 @@ class ConversationPartySerializer(serializers.ModelSerializer):
             'store': {'write_only': True}, 
             'client': {'write_only': True},
             'operator': {'write_only': True} 
-
         }
+
+class ChatSerializer(serializers.ModelSerializer):
+    
+    convo_party = ConversationPartySerializer(source='conversation_party', read_only=True)
+
+    class Meta:
+        model = ClientChat
+        dept = 1
+        fields = [ 'uuid', 'conversation_party', 'user', 'convo_party', 'message', 'status']
+
+
+class OperatorChatSerializer(serializers.ModelSerializer):
+    
+    convo_party = ConversationPartySerializer(source='conversation_party', read_only=True)
+
+    class Meta:
+        model = OperatorChat
+        dept = 1
+        fields = [ 'uuid', 'conversation_party', 'operator', 'convo_party', 'message', 'chat']
