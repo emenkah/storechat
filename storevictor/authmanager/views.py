@@ -5,7 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.views import APIView
 from .serializers import UserSerializer
 from . models import User
-from customer.models import Customer
+from store.models import Client
 
 import jwt, datetime
 
@@ -14,18 +14,20 @@ import jwt, datetime
 class RegisterView(APIView):
     
     def post(self, request):
+        
         serializer = UserSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
 
         user_obj = serializer.save()
 
-        customer = Customer.objects.get(user__id=user_obj.id)
+        #client = Client.objects.get(user__id=user_obj.id, timezone=timezone)
     
         data = serializer.data
-        data["CustomerID"] =  customer.uuid
+        #data["ClientID"] =  client.uuid
      
         return Response(data = data)
+
 
 
 class LoginView(APIView):
@@ -43,7 +45,7 @@ class LoginView(APIView):
         if not user.check_password(password):
             raise AuthenticationFailed("Incorrect Password!")
 
-        customer = Customer.objects.get(user__id=user.id)
+        customer = Client.objects.get(user__id=user.id)
 
         payload = {
             'id' : user.id,
@@ -60,7 +62,7 @@ class LoginView(APIView):
                     'email': user.email,
                     'jwt' : token,
                     "uuid" : user.uuid,
-                    "customerID" : customer.uuid
+                    "clientID" : customer.uuid
                 }
             )
 
