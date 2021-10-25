@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from django.core.mail import send_mail
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -9,15 +8,14 @@ from .serializers import ( StoreSerializer, ClientSerializer, OperatorSerializer
 )
 from authmanager.serializers import UserSerializer
 from .models import Client, Operator, Store, Conversation, ClientChat, OperatorChat, Discount
-from .tasks import notification
 from utility.logger import appLogs 
-from decouple import config
-import smtplib
+
+from .tasks import send_notification_email_task
+
 
 # Create your views here.
 
-    
-
+  
 
 class NewOperatorChatAPIView(APIView):
 
@@ -45,15 +43,22 @@ class NewOperatorChatAPIView(APIView):
         discount_code = Discount.objects.get(store=conversation_party.store).code
         
 
-        notification(
-                    "Your Order Enquiry", 
+        # notification(
+        #             "Your Order Enquiry", 
+        #             message, 
+        #             discount_code,
+        #             chat_from_client.user.first_name, 
+        #             operator_first_name=operator.user.get_full_name(),
+        #             dest_email=chat_from_client.user.email               
+        # )
+
+        send_notification_email_task.delay("RE: Celery Check", 
                     message, 
                     discount_code,
                     chat_from_client.user.first_name, 
                     operator_first_name=operator.user.get_full_name(),
                     dest_email=chat_from_client.user.email
-                    
-        )
+                    )
 
         data = {}
         data["success"] = True
