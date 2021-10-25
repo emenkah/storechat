@@ -24,6 +24,4 @@ def notification(subject, body, discount_code, client_name,  operator_first_name
                 appLogs('Error in mail sending: ', e)
 
 
-@shared_task
-def add(x, y):
-    return X + y
+
