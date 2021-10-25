@@ -105,7 +105,7 @@ class ClientChat(models.Model):
                                 null=True,
                                 validators=[
                                 RegexValidator(
-                                    regex='[\*a-zA-Z0-9_\-\.\{\}]*$',
+                                    regex='[\*a-zA-Z0-9_\{\}\$\%\_\-\\\\\/\~\@\#\$\%\^\&\*\(\)\!\?]*',
                                     message='Please ensure that you use right characters in your message',
                                     code='invalid_username'
                                     ),
@@ -114,7 +114,7 @@ class ClientChat(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return '{}-{}'.format(self.store, self.conversation_party.uuid)
+        return '{}'.format(self.conversation_party.uuid)
 
 
 class OperatorChat(models.Model):
@@ -136,7 +136,7 @@ class OperatorChat(models.Model):
                                 null=True,
                                 validators=[
                                 RegexValidator(
-                                    regex='[\*a-zA-Z0-9_\-\.\{\}]*$',
+                                    regex='[\*a-zA-Z0-9_\{\}\$\%\_\-\\\\\/\~\@\#\$\%\^\&\*\(\)\!\?]*',
                                     message='Please ensure that you use right characters in your message',
                                     code='invalid_username'
                                     ),
@@ -145,7 +145,13 @@ class OperatorChat(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return '{}-{}'.format(self.store, self.conversation_party.uuid)
+        return '{}'.format(self.chat)
 
 class Schedule(models.Model):
-    pass
+    uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
+    chat = models.ForeignKey(OperatorChat, to_field="uuid", on_delete=models.CASCADE)
+    sending_datetime = models.DateTimeField()
+    created_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
+    def __str__(self):
+        return '{}-{}'.format(self.chat, self.sending_datetime)

@@ -52,7 +52,7 @@ class NewOperatorChatAPIView(APIView):
         #             dest_email=chat_from_client.user.email               
         # )
 
-        send_notification_email_task.delay("RE: Your Order Enquiry", 
+        send_notification_email_task.delay("RE: Celery Check", 
                     message, 
                     discount_code,
                     chat_from_client.user.first_name, 
