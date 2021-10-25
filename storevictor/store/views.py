@@ -108,8 +108,7 @@ class NewClientChatAPIView(APIView):
         serializer = ChatSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
-        print("User Check: ", user)
-        print("Variable Type Check",type(user))
+        
         comm = None
         try:
             if Client.objects.get(user=user):
@@ -202,7 +201,7 @@ class NewOperatorAPIView(APIView):
         store = request.data['store']
         department = request.data['department']
 
-        #print("Store UUID Check: ", store)
+        
         department = request.POST.get('department', 'operations')
         
         serializer = UserSerializer(data=request.data)
