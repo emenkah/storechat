@@ -1,4 +1,7 @@
 from celery import shared_task
+from utility.logger import appLogs 
+from django.core.mail import send_mail
+import smtplib
 
 app = ""
 
@@ -22,6 +25,7 @@ def notification(subject, body, discount_code, client_name,  operator_first_name
 
     except smtplib.SMTPException as e:
                 appLogs('Error in mail sending: ', e)
+
 
 
 
