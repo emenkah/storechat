@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from . models import Store, Client, Operator, ConversationParty, ClientChat, OperatorChat
+from . models import Store, Client, Operator, Conversation, ClientChat, OperatorChat
 from authmanager.serializers import UserSerializer
 
 
@@ -45,7 +45,7 @@ class ConversationPartySerializer(serializers.ModelSerializer):
     store_and_operator = OperatorSerializer(source='operator', read_only=True)
 
     class Meta:
-        model = ConversationParty
+        model = Conversation
         dept = 1
         fields = [ 'store', 'uuid', 'client','client_detail', 'operator', 'store_and_operator', 'status']
         extra_kwargs = {
