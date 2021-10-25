@@ -8,7 +8,7 @@ from .serializers import ( StoreSerializer, ClientSerializer, OperatorSerializer
                             ConversationPartySerializer, ChatSerializer, OperatorChatSerializer
 )
 from authmanager.serializers import UserSerializer
-from .models import Client, Operator, Store, ConversationParty, ClientChat, OperatorChat, Discount
+from .models import Client, Operator, Store, Conversation, ClientChat, OperatorChat, Discount
 from .tasks import notification
 from utility.logger import appLogs 
 from decouple import config
@@ -141,7 +141,7 @@ class NewClientChatAPIView(APIView):
 class NewConversationPartyAPIView(APIView):
 
     def get(self, request):
-        services = ConversationParty.objects.all()
+        services = Conversation.objects.all()
         serializer = ConversationPartySerializer(services, many=True)
         return Response(serializer.data)
 
@@ -167,10 +167,10 @@ class NewConversationPartyDetailsAPIView(APIView):
     def get_object(self, uuid):
 
         try:            
-            convo_party = get_object_or_404(ConversationParty, uuid=uuid, is_deleted=False)
+            convo_party = get_object_or_404(Conversation, uuid=uuid, is_deleted=False)
             return convo_party
             
-        except ConversationParty.DoesNotExist:
+        except Conversation.DoesNotExist:
             return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
     def get(self, request, uuid):

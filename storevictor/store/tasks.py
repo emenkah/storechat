@@ -1,4 +1,4 @@
-from celery import Celery
+from celery import shared_task
 
 app = ""
 
@@ -23,3 +23,7 @@ def notification(subject, body, discount_code, client_name,  operator_first_name
     except smtplib.SMTPException as e:
                 appLogs('Error in mail sending: ', e)
 
+
+@shared_task
+def add(x, y):
+    return X + y

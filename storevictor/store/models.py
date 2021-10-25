@@ -65,7 +65,7 @@ class Operator(models.Model):
         return '{}-{}-{}'.format(self.user, self.store, self.department)
 
 
-class ConversationParty(models.Model):
+class Conversation(models.Model):
     STATUS_CHOICE = (
         ('pending', 'Pending'),
         ('responding', 'Responding'),
@@ -94,7 +94,7 @@ class ClientChat(models.Model):
     )
 
     uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
-    conversation_party = models.ForeignKey(ConversationParty, to_field="uuid", on_delete=models.CASCADE)
+    conversation_party = models.ForeignKey(Conversation, to_field="uuid", on_delete=models.CASCADE)
     communication = models.CharField(max_length=12, choices=COMM_CHOICE, blank=True, null=True)
     user = models.ForeignKey(User, to_field='uuid', on_delete=models.CASCADE, blank=True, null=True)
     created_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
@@ -125,7 +125,7 @@ class OperatorChat(models.Model):
     )
 
     uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
-    conversation_party = models.ForeignKey(ConversationParty, to_field="uuid", on_delete=models.CASCADE)
+    conversation_party = models.ForeignKey(Conversation, to_field="uuid", on_delete=models.CASCADE)
     operator = models.ForeignKey(Operator, to_field='uuid', on_delete=models.CASCADE, blank=True, null=True)
     chat = models.ForeignKey(ClientChat, to_field='uuid', on_delete=models.CASCADE, blank=True, null=True)
     created_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
