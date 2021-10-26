@@ -1,10 +1,10 @@
 ## Store Victor
 
-Requirement:
+Major Requirement :
 1. Python 3
 2. SQlite3
 
-Install dependencies by invoking the command below:
+Install packages and dependencies by invoking the command below:
 ```
     pip/pip3 install -r requirements.txt
 ```
@@ -19,7 +19,7 @@ Create a user account, preferrably a super user:
 python manage.py createsuperuser
 ```
 
-You be good to go with:
+You should be good to go with:
 ```bash
 python manage.py runserver
 ```
