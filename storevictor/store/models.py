@@ -77,7 +77,7 @@ class Conversation(models.Model):
     uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
     store = models.ForeignKey(Store, to_field="uuid", on_delete=models.CASCADE)
     client = models.ForeignKey(Client, to_field="uuid", on_delete=models.CASCADE)
-    operator = models.ForeignKey(Operator, to_field="uuid", on_delete=models.CASCADE)
+    operator_uuid = models.ForeignKey(Operator, to_field="uuid", on_delete=models.CASCADE)
     created_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     resolved_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     status = models.CharField(max_length=32, choices=STATUS_CHOICE, default='pending')

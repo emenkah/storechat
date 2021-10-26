@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from . models import Store, Client, Operator, Conversation, ClientChat, OperatorChat
 from authmanager.serializers import UserSerializer
+from itertools import chain
 
 
 class StoreSerializer(serializers.ModelSerializer):
@@ -17,13 +18,13 @@ class StoreSerializer(serializers.ModelSerializer):
 
 class OperatorSerializer(serializers.ModelSerializer):
     
-    operator_detail = UserSerializer(source='user', read_only=True)
+    operator = UserSerializer(source='user', read_only=True)
     store_detail = StoreSerializer(source='store', read_only=True)
 
     class Meta:
         model = Operator
         dept = 1
-        fields = [ 'user', 'uuid', 'store', 'store_detail', 'operator_detail', 'department' ]
+        fields = [ 'user', 'uuid', 'store', 'store_detail', 'operator', 'department' ]
         extra_kwargs = {
             'store': {'write_only': True} 
         }
@@ -42,17 +43,27 @@ class ConversationPartySerializer(serializers.ModelSerializer):
 
     
     client_detail = ClientSerializer(source='client', read_only=True)
-    store_and_operator = OperatorSerializer(source='operator', read_only=True)
+    operator = OperatorSerializer(source='operator_uuid', read_only=True)
+    chats = serializers.SerializerMethodField('get_chats_from_conversation')
+
 
     class Meta:
         model = Conversation
         dept = 1
-        fields = [ 'store', 'uuid', 'client','client_detail', 'operator', 'store_and_operator', 'status']
+        fields = [ 'store', 'uuid', 'client','client_detail', 'operator_uuid', 'operator', 'status', 'chats']
         extra_kwargs = {
             'store': {'write_only': True}, 
             'client': {'write_only': True},
-            'operator': {'write_only': True} 
+            'operator_uuid': {'write_only': True} 
         }
+
+    def get_chats_from_conversation(self, conversation):
+
+        opchat = OperatorChat.objects.filter(conversation_party=conversation).values_list('message', flat=True)
+        clichat = ClientChat.objects.filter(conversation_party=conversation).values_list('message', flat=True)
+        combined_list = list(chain(clichat, opchat))
+
+        return combined_list
 
 class ChatSerializer(serializers.ModelSerializer):
     
