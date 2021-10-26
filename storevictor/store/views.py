@@ -18,6 +18,9 @@ from .tasks import send_notification_email_task
   
 class NewOperatorChatAPIView(APIView):
 
+    '''
+        API View for New Chat from Operator to Client
+    '''
     def get(self, request):
         chats = OperatorChat.objects.all()
         serializer = OperatorChatSerializer(chats, many=True)
@@ -38,7 +41,11 @@ class NewOperatorChatAPIView(APIView):
         return Response(data=data, status=status.HTTP_201_CREATED)
 
 class NewChatDetailsAPIView(APIView):
-
+    
+    '''
+        Class for detail view for both Client and Operator chats.
+        GET Request is for single object fetch.
+    '''
     def get_object(self, uuid):
 
         try:            
@@ -65,6 +72,11 @@ class NewChatDetailsAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, uuid): 
+
+        '''
+            API View for toggling to delete a chat record. 
+            Records are not deleted but marked as deleted. 
+        '''
         chat = self.get_object(uuid)
         chat.is_deleted = True
         chat.save()
@@ -72,6 +84,10 @@ class NewChatDetailsAPIView(APIView):
 
 
 class NewClientChatAPIView(APIView):
+
+    '''
+        API View for New Chat from  Client to Operator.
+    '''
 
     def get(self, request):
         chats = ClientChat.objects.all()
@@ -114,6 +130,10 @@ class NewClientChatAPIView(APIView):
 
 class NewConversationPartyAPIView(APIView):
 
+    '''
+        API View for New Conversation/COnversation-Party(Store, Operator, Client).
+    '''
+
     def get(self, request):
         services = Conversation.objects.all()
         serializer = ConversationPartySerializer(services, many=True)
@@ -137,6 +157,11 @@ class NewConversationPartyAPIView(APIView):
 
 
 class NewConversationPartyDetailsAPIView(APIView):
+
+    '''
+        API View for fetching the details of particular conversation/conversation-party
+        PUT request gets updates done.
+    '''
 
     def get_object(self, uuid):
 
@@ -171,8 +196,14 @@ class NewConversationPartyDetailsAPIView(APIView):
 
 
 class NewOperatorAPIView(APIView):
+
+    '''
+        API View for creating/registering(POST Request) a New Operator of a Store
+        and assigning to a particular department.
+       
+    '''
     
-   def post(self, request):
+    def post(self, request):
         store = request.data['store']
         department = request.data['department']
 
@@ -200,8 +231,13 @@ class NewOperatorAPIView(APIView):
 
 
 class NewClientAPIView(APIView):
+
+    '''
+        API View for creating/registering(POST Request) a New chat from a client/customer.
+        
+    '''
     
-   def post(self, request):
+    def post(self, request):
         timezone = request.POST.get('timezone', 'UTC')
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -223,6 +259,10 @@ class NewClientAPIView(APIView):
 
 class NewStoreAPIView(APIView):
 
+    '''
+        API View for creating/registering(POST Request) a New  Store
+        GET request is for fetching all stores.
+    '''
 
     def get(self, request):
         stores = Store.objects.all()
