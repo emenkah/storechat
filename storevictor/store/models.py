@@ -9,8 +9,8 @@ import pytz
 # Create your models here.
 
 '''
-    MOodels are built with uuids as foreign-keys and exposed ID.
-    MOdelsa are built with deleted boolean field to toggle and marked as deleted 
+    Models are built with uuids as foreign-keys and exposed ID.
+    MOdels are built with deleted boolean field to toggle and marked as deleted 
     rather than a physical purging of records.
 '''
 
