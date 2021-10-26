@@ -24,7 +24,7 @@ You should be good to go with:
 python manage.py runserver
 ```
 
-Some fixture will be added so easily populate the db for test purposes
+Some fixture will be added so to easily populate the db for test purposes
 
 ###
 Postman collections have been shared as `Store.postman_collection.json`
