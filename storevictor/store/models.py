@@ -77,7 +77,7 @@ class Conversation(models.Model):
     uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
     store = models.ForeignKey(Store, to_field="uuid", on_delete=models.CASCADE)
     client = models.ForeignKey(Client, to_field="uuid", on_delete=models.CASCADE)
-    operator = models.ForeignKey(Operator, to_field="uuid", on_delete=models.CASCADE)
+    operator_uuid = models.ForeignKey(Operator, to_field="uuid", on_delete=models.CASCADE)
     created_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     resolved_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     status = models.CharField(max_length=32, choices=STATUS_CHOICE, default='pending')
@@ -148,10 +148,22 @@ class OperatorChat(models.Model):
         return '{}'.format(self.chat)
 
 class Schedule(models.Model):
+
+    STATUS_CHOICE = (
+        ('sent', 'sent'),
+        ('pending', 'pending')        
+    )
+
     uuid = models.CharField(default=uuid.uuid4, max_length=40, editable=False, unique=True)
     chat = models.ForeignKey(OperatorChat, to_field="uuid", on_delete=models.CASCADE)
     sending_datetime = models.DateTimeField()
     created_datetime = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    status = models.CharField(max_length=32, choices=STATUS_CHOICE,  default='pending')
 
     def __str__(self):
         return '{}-{}'.format(self.chat, self.sending_datetime)
+
+    # @classmethod
+    # def create_schedule(self, chat, sending_datetime):
+    #     schedule = self.create(chat=chat, sending_datetime=sending_datetime)
+    #     return schedule

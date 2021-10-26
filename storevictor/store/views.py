@@ -16,7 +16,6 @@ from .tasks import send_notification_email_task
 # Create your views here.
 
   
-
 class NewOperatorChatAPIView(APIView):
 
     def get(self, request):
@@ -29,37 +28,8 @@ class NewOperatorChatAPIView(APIView):
         serializer = OperatorChatSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        message = serializer.validated_data["message"]
 
-        chat_from_client = serializer.validated_data["chat"]
         
-
-        operator = serializer.validated_data["operator"]
-        
-
-        conversation_party = serializer.validated_data["conversation_party"]
-        
-        
-        discount_code = Discount.objects.get(store=conversation_party.store).code
-        
-
-        # notification(
-        #             "Your Order Enquiry", 
-        #             message, 
-        #             discount_code,
-        #             chat_from_client.user.first_name, 
-        #             operator_first_name=operator.user.get_full_name(),
-        #             dest_email=chat_from_client.user.email               
-        # )
-
-        send_notification_email_task.delay("RE: Celery Check", 
-                    message, 
-                    discount_code,
-                    chat_from_client.user.first_name, 
-                    operator_first_name=operator.user.get_full_name(),
-                    dest_email=chat_from_client.user.email
-                    )
-
         data = {}
         data["success"] = True
         data["message"] = "New Operator Chat Created"
