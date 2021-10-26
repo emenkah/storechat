@@ -7,7 +7,9 @@ import smtplib
 
 
 def notification(subject, body, discount_code, client_name, operator_first_name="Rosemary", dest_email="tipalov351@bomoads.com"):
-    
+    '''
+        Wrapper for sending mail notifications 
+    '''
     sender_email = "emenqfox@gmail.com"
 
     try:

@@ -9,6 +9,15 @@ import pytz
 
 @receiver(post_save, sender=OperatorChat)
 def create_schedule(sender, instance, created, **kwargs):
+
+    '''
+        Signal function to auto-create a record/chat to schedule to be sent at an 
+        appropriate time, considring time-zone of shop so operators could respond 
+        on a work schedule.
+
+        It's assumed that operator and shop are on the same time-zone
+    '''
+
     if created:
         timezone_of_store = pytz.timezone(instance.conversation_party.store.timezone)
 
@@ -41,6 +50,7 @@ def create_schedule(sender, instance, created, **kwargs):
         schedule = Schedule.objects.create(chat = instance, sending_datetime=sending_datetime)
 
         discount_code = Discount.objects.get(store=instance.conversation_party.store).code
+        
         
         subject = "RE: Celery Check"
         send_notification_email_task.delay(

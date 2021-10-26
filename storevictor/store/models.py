@@ -7,6 +7,14 @@ import uuid
 import pytz
 
 # Create your models here.
+
+'''
+    MOodels are built with uuids as foreign-keys and exposed ID.
+    MOdelsa are built with deleted boolean field to toggle and marked as deleted 
+    rather than a physical purging of records.
+'''
+
+
 User = get_user_model()
 TIMEZONES = tuple(zip(pytz.all_timezones, pytz.all_timezones))
 
